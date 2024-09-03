@@ -1,0 +1,1 @@
+from .renta_v45 import renta_cotizador

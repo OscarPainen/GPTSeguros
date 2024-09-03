@@ -1,0 +1,1 @@
+from .mapfre_v25 import mapfre_cotizador
