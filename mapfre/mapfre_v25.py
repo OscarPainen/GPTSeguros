@@ -96,160 +96,111 @@ def mapfre_cotizador(ruta_descarga,datos_cotizacion):
         )
         select_tipo_auto = Select(tipo_auto)
         time.sleep(1)
-        select_tipo_auto.select_by_index(2)
-        
+        select_tipo_auto.select_by_index(1)
+
         btn_simulacion = driver.find_element(By.XPATH, '//*[@id="btn_comenzar_simulacion"]')
-        btn_simulacion.click()
         time.sleep(3)
+        btn_simulacion.click()
+
         try:
             # Abre nueva pestaña con el cotizador
             driver.switch_to.window(driver.window_handles[-1])
-            print("Se cambió correctamente a la nueva pestaña.")
-            #new_element = WebDriverWait(driver, 60).until(
-            #    EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnCard2_1"]'))
-            #)
-            #new_element.click()
-      
+
+            # Esperar a que un elemento de la nueva pestaña esté presente
+            try:
+                new_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnCard2_1"]'))
+                )
+            except Exception as e:
+                print(f"Error al encontrar el elemento en la nueva pestaña: {e}")
+
+            new_element.click()
+
             # Esperar a que el campo de patente esté presente
-            patente = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtNumMatricula"]'))
-            )
-            patente.send_keys(data_cliente['patente'] + Keys.ENTER)
-            time.sleep(5)
+            try:
+                patente = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtNumMatricula"]'))
+                )
+            except Exception as e:
+                print(f"Error al encontrar el campo de patente en la nueva pestaña: {e}")
+
+            patente.send_keys('TLBK94' + Keys.ENTER)
 
             # Franquicia aduanera
-            aduanera = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtFranquiciaNo"]'))
-            )
+            aduanera = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtFranquiciaNo"]')
             aduanera.click()
 
-            # Modelo
-            select_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_drpModelo'))
-            )
-            select = Select(select_element)
-            # Depuración: imprimir todas las opciones disponibles
-            opciones_disponibles = [option.text for option in select.options]
-            print("Opciones disponibles en 'Modelo':", opciones_disponibles)
-            
-            # Seleccionar la opción por el texto visible
-            select.select_by_visible_text(data_cliente['modelo'])
-            # Esperar hasta que el elemento select esté presente
-            select_element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'ctl00_ContentPlaceHolder1_drpSubModelo'))
-            )
+            # Rut dueño
+            rut_dueño = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtDueñoSi"]')
+            rut_dueño.click()
 
-            # Crear una instancia de Select
-            select = Select(select_element)
-
-            # Variable para almacenar el índice de la última ocurrencia del texto visible
-            last_occurrence_index = -1
-            search_text = "GENERICO"
-
-            # Recorrer todas las opciones y encontrar la última ocurrencia del texto
-            for index, option in enumerate(select.options):
-                if option.text.strip() == search_text:
-                    last_occurrence_index = index
-
-            # Si se encuentra al menos una ocurrencia, selecciona la última
-            if last_occurrence_index != -1:
-                select.select_by_index(last_occurrence_index)
-                print(f"Se ha seleccionado la última ocurrencia del texto '{search_text}' en la posición {last_occurrence_index}.")
-            else:
-                print(f"No se encontró ninguna opción con el texto '{search_text}'.")
-                
-            time.sleep(5)
             # Vehículo menor de 35 años
-            vehiculo35 = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtMenor35Si"]'))
-            )
+            vehiculo35 = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtMenor35Si"]')
             vehiculo35.click()
-            print("Vehículo menor de 35 años seleccionado correctamente.")
-        except Exception as e:
-            print(f"Error al seleccionar vehículo menor de 35 años: {e}")
 
-        try:
             # Vehículo uso particular
-            uso_part = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtExcPartSi"]'))
-            )
+            uso_part = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtExcPartSi"]')
             uso_part.click()
-            print("Uso particular del vehículo seleccionado correctamente.")
-        except Exception as e:
-            print(f"Error al seleccionar el uso particular del vehículo: {e}")
-
-        try:
-            time.sleep(15)  # Esperar antes de continuar con la cotización
+            time.sleep(15)
 
             # Seguir con la cotización
-            siguiente = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_imgSiguiente"]'))
-            )
+            siguiente = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_imgSiguiente"]')
             siguiente.click()
-            print("Botón 'Siguiente' clicado correctamente.")
-        except Exception as e:
-            print(f"Error al hacer clic en el botón 'Siguiente': {e}")
-
-        try:
-            time.sleep(7)  # Esperar antes de calcular la cotización
+            time.sleep(7)
 
             # Calcular Cotización
-            calcular = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_ImgCalcular"]'))
-            )
+            calcular = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_ImgCalcular"]')
             calcular.click()
-            print("Botón 'Calcular' clicado correctamente.")
-        except Exception as e:
-            print(f"Error al hacer clic en el botón 'Calcular': {e}")
-
-        try:
-            time.sleep(15)  # Esperar antes de seleccionar el plan
+            time.sleep(15)
 
             # Seleccionar plan según deducible
-            elegir = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbPrima01"]'))
-            )
+            elegir = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbPrima01"]')
             elegir.click()
-            print("Plan seleccionado correctamente.")
-        except Exception as e:
-            print(f"Error al seleccionar el plan: {e}")
 
-        try:
             # Generar cotización
             coti_pdf = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_ImgCotizar"]'))
             )
             coti_pdf.click()
-            print("Cotización generada correctamente.")
-        except Exception as e:
-            print(f"Error al generar la cotización: {e}")
 
-        # Esperar la descarga del PDF
-        def wait_for_download(path, timeout=60):
-            seconds = 0
-            while seconds < timeout:
-                if any(filename.endswith('.pdf') for filename in os.listdir(path)):
-                    return True
+            try:
+                # Definir un nuevo nombre
+                def wait_for_download(path, timeout=60):
+                    seconds = 0
+                    while seconds < timeout:
+                        if any(filename.endswith('.pdf') for filename in os.listdir(path)):
+                            return True
+                        else:
+                            time.sleep(1)
+                            seconds += 1
+                    return False
+
+                if wait_for_download(ruta_descarga):
+                    list_of_files = glob.glob(ruta_descarga + '/*.pdf')  # Buscar archivos PDF en la carpeta de descarga
+                    latest_file = max(list_of_files, key=os.path.getctime)  # Obtener el archivo más reciente por fecha de creación
+
+                    # Obtener el nombre base del archivo (sin la extensión .pdf)
+                    nombre_archivo = os.path.basename(latest_file).split('.')[0]
+                    #print(f"Archivo descargado: {nombre_archivo}")
+
+                    # Definir un nuevo nombre para el archivo
+                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_Mapfre.pdf")
+                    # Renombrar el archivo
+                    os.rename(latest_file, nuevo_nombre)
+                    print(f"Archivo renombrado a: {nuevo_nombre}")
                 else:
-                    time.sleep(1)
-                    seconds += 1
-            return False
+                    print("Error: La descarga de la cotización de SURA no se completó correctamente.")
 
-        if wait_for_download(ruta_descarga):
-            # Obtener el nombre del archivo descargado más reciente
-            list_of_files = glob.glob(os.path.join(ruta_descarga, '*.pdf'))  # Buscar archivos PDF en la carpeta de descarga
-            latest_file = max(list_of_files, key=os.path.getctime)  # Obtener el archivo más reciente por fecha de creación
+            except Exception as e:
+                print(f"Ha ocurrido un error durante la descarga: {e}")
 
-            # Obtener el nombre base del archivo (sin la extensión .pdf)
-            nombre_archivo = os.path.basename(latest_file).split('.')[0]
+        except Exception as e:
+            print(f"Ha ocurrido un error durante la ejecución: {e}")
 
-            print(nombre_archivo)
-        else:
-            print("Error: La descarga de la cotización no se completó correctamente.")
+        finally:
+            time.sleep(3)  # Esperar antes de cerrar el navegador para observar el resultado
+            driver.quit()
 
     except Exception as e:
-        print(f"Ha ocurrido un error durante la ejecución: {e}")
-
-    finally:
-        time.sleep(3)  # Esperar antes de cerrar el navegador para observar el resultado
+        print(f"Ha ocurrido un error general en la ejecución: {e}")
         driver.quit()

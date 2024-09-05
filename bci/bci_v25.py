@@ -105,11 +105,10 @@ def configure_webdriver(download_path,chrome_testing=False):
     else:
         return chrome_default(webdriver.Firefox())
 
-def bci_cotizador(ruta_descarga,datos_cotizacion):
+def bci_cotizador(ruta_descarga,data_cliente):
     usuario = '766609414'
     contraseña = '76660941rts'
     
-    data_cliente =  datos_cotizacion
     # ruta_descarga = create_download_path() 
     driver = configure_webdriver(ruta_descarga,chrome_testing=True)
     
@@ -233,23 +232,33 @@ def bci_cotizador(ruta_descarga,datos_cotizacion):
         file_pdf = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-wrapper"]/div[3]/div[1]/section[2]/article[6]/a')))
         driver.execute_script("arguments[0].scrollIntoView(true);", file_pdf)
         driver.execute_script("arguments[0].click();", file_pdf)
-
         # Guardar la lista de archivos después de la descarga
         files_after = set(os.listdir(ruta_descarga))
+        # Definir un nuevo nombre
+        def wait_for_download(path, timeout=60):
+            seconds = 0
+            while seconds < timeout:
+                if any(filename.endswith('.crdownload') for filename in os.listdir(path)):
+                    time.sleep(1)
+                    seconds += 1
+                else:
+                    return True
+            return False
+        if wait_for_download(ruta_descarga):
+            # Identificar el nuevo archivo
+            new_files = files_after - files_before
+            if new_files:
+                downloaded_file = new_files.pop()  # Si hay un archivo nuevo, obtener su nombre
+                print(f"Archivo descargado: {downloaded_file}")
 
-        # Identificar el nuevo archivo
-        new_files = files_after - files_before
-        if new_files:
-            downloaded_file = new_files.pop()  # Si hay un archivo nuevo, obtener su nombre
-            print(f"Archivo descargado: {downloaded_file}")
-
-            # Cambiar el nombre del archivo descargado
-            name = data_cliente['nombre_asegurado']
-            new_name = f'{name}_BCI.pdf'  # Cambia este nombre por el que desees
-            os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
-            print(f"Archivo renombrado a: {new_name}")
+                # Cambiar el nombre del archivo descargado
+                new_name = f'{data_cliente["nombre_asegurado"]}_BCI.pdf'  # Cambia este nombre por el que desees
+                os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
+                print(f"Archivo renombrado a: {new_name}")
+            else:
+                print("No se detectaron nuevos archivos descargados.")
         else:
-            print("No se detectaron nuevos archivos descargados.")
+            print("Error: La descarga de la cotización de BCI no se completó correctamente.")
 
     finally:
         # Cerrar el WebDriver

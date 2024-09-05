@@ -20,7 +20,7 @@ def main():
 
     # Cotizador Mapfre - 
     if opcion == "1":
-        mapfre_cotizador(ruta_descarga,{"marca": 'jmc',
+        mapfre_cotizador(ruta_descarga,{
         "modelo": 'eon',
         "anio": '2013',
         "uso_vehiculo": 'particular',
@@ -31,7 +31,7 @@ def main():
         "apellido1": 'fuentes',
         "apellido2": 'otarola',
         'patente':'fbgh14',
-        "rut": '20080516k'})
+        })
 
     # Cotizador BCI - OK
     elif opcion == "2": 
@@ -67,7 +67,8 @@ def main():
         "patente": 'fbgh14',
         "marca": 'kia',
         "modelo": 'rio 3',
-        "anio": '2013'
+        "anio": '2013',
+        "nombre_asegurado": 'Haxeld',
     })
         
     # Exit()

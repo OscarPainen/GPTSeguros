@@ -151,7 +151,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
 
     time.sleep(10)
 
-    # datos del asegurado
+    # Datos del asegurado
 
     # Buscar el campo Rut dentro de los iframes
     found_rut = False
@@ -190,10 +190,14 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
         )
         btn_findRut.click()
 
+    
+
         btn_usado = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '// *[ @ id = "EstadoVehiculoUsado"]'))
         )
-        btn_usado.click()
+        # Usar JavaScript para hacer clic en el botón
+        driver.execute_script("arguments[0].click();", btn_usado)
+        print("Botón 'EstadoVehiculoUsado' clicado correctamente usando JavaScript.")
         time.sleep(1)
 
         btn_aceptar = WebDriverWait(driver, 10).until(

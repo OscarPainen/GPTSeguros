@@ -265,19 +265,38 @@ def renta_cotizador(ruta_descarga,datos_cotizacion):
         # Guardar la lista de archivos después de la descarga
         files_after = set(os.listdir(ruta_descarga))
 
-        # Identificar el nuevo archivo
-        new_files = files_after - files_before
-        if new_files:
-            downloaded_file = new_files.pop()  # Si hay un archivo nuevo, obtener su nombre
-            print(f"Archivo descargado: {downloaded_file}")
+        # Guardar PDF
+        try:
+            def wait_for_download(path, timeout=60):
+                seconds = 0
+                while seconds < timeout:
+                    # Comparar archivos antes y después
+                    new_files = set(os.listdir(path)) - files_before
+                    if new_files and any(filename.endswith('.pdf') for filename in new_files):
+                        return new_files  # Devolver los nuevos archivos PDF
+                    time.sleep(1)
+                    seconds += 1
+                return None
 
-            # Cambiar el nombre del archivo descargado
-            name = data_cliente['nombre_asegurado']
-            new_name = f'{name}_RENTA.pdf'  # Cambia este nombre por el que desees
-            os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
-            print(f"Archivo renombrado a: {new_name}")
-        else:
-            print("No se detectaron nuevos archivos descargados.")
+            # Esperar hasta que el archivo PDF se descargue
+            new_files = wait_for_download(ruta_descarga, timeout=60)
+
+            if new_files:
+                downloaded_file = new_files.pop()  # Obtener el nuevo archivo
+                print(f"Archivo descargado: {downloaded_file}")
+
+                # Cambiar el nombre del archivo descargado
+                name = data_cliente['nombre_asegurado']
+                new_name = f'{name}_RENTA.pdf'  # Cambia este nombre por el que desees
+                os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
+                print(f"Archivo renombrado a: {new_name}")
+            else:
+                print("Error: La descarga del archivo no se completó correctamente.")
+
+        except Exception as e:
+            print(f"Ha ocurrido un error durante la descarga del PDF: {e}")
+
+        
     except Exception as e:
         print(f"Ha ocurrido un error: {e}")
 

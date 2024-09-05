@@ -70,16 +70,16 @@ def configure_webdriver(download_path,chrome_testing=False):
         return chrome_default(webdriver.Firefox())
 
 
-def hdi_cotizador():
+def hdi_cotizador(ruta_descarga,data_cliente):
         
     usuario = '5636'
     contraseña = '149066'
     login_url = 'https://www.hdi.cl/ingresar'
-    data_cliente = get_main_data()
+
+    driver = configure_webdriver(ruta_descarga,chrome_testing=True)
     
     
     try:
-        driver = configure_webdriver(True)
         driver.get(login_url)
 
         # Esperar a que se cargue la página y encontrar el elemento de inicio de sesión de corredores
@@ -101,7 +101,7 @@ def hdi_cotizador():
         clave.send_keys(contraseña)
 
         # Intentar hacer clic en el botón de ingreso varias veces para evitar errores de StaleElementReferenceException
-        for _ in range(3):
+        for _ in range(5):
             try:
                 boton_ingre = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="loginCorredores"]/a'))

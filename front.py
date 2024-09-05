@@ -10,12 +10,12 @@ ruta_descarga = get_download_path()
 def realizar_cotizacion():
     # obtiene la informacion entregada 
     datos_cotizacion = {
+        "nombre_asegurado": entry_nombre_asegurado.get(),
+        "rut": entry_rut.get(),
         "patente": entry_patente.get(),
         "marca": entry_marca.get(),
         "modelo": entry_modelo.get(),
         "anio": entry_anio.get(),
-        "nombre_asegurado": entry_nombre_asegurado.get(),
-        "rut": entry_rut.get(),
     }
 
     # Llama a la función bci_cotizador para cotizar en BCI
