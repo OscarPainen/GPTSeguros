@@ -67,7 +67,7 @@ tk.Label(root, text="Nombre del Asegurado").grid(row=0, column=1, padx=10, pady=
 entry_nombre_asegurado = tk.Entry(root)
 entry_nombre_asegurado.grid(row=0, column=2, padx=10, pady=10)
 
-tk.Label(root, text="RUT").grid(row=1, column=1, padx=10, pady=10)
+tk.Label(root, text="RUT (sin puntos ni guion)").grid(row=1, column=1, padx=10, pady=10)
 entry_rut = tk.Entry(root)
 entry_rut.grid(row=1, column=2, padx=10, pady=10)
 

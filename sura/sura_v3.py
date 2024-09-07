@@ -13,6 +13,7 @@ import os
 import glob
 import sys
 import json
+from fuzzywuzzy import fuzz
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente (sin puntos ni guión): ")
@@ -278,21 +279,24 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     EC.presence_of_all_elements_located((By.XPATH, '//div[@class="k-animation-container"]/div[@id="Vehiculo_ModeloID-list"]/ul/li'))
                 )
 
-                # Seleccionar la opción que mejor coincida con lo escrito
+                # Seleccionar la opción con la mayor coincidencia utilizando fuzzy matching
                 mejor_coincidencia = None
+                mejor_similitud = 0
                 texto_buscado = data_cliente['modelo'].lower()
-                
+
                 for opcion in opciones_modelo:
                     texto_opcion = opcion.text.strip().lower()
-                    if texto_buscado in texto_opcion:
+                    similitud = fuzz.ratio(texto_buscado, texto_opcion)
+                    if similitud > mejor_similitud:
+                        mejor_similitud = similitud
                         mejor_coincidencia = opcion
-                        break
 
-                if mejor_coincidencia:
+                # Seleccionar la opción que tenga la mejor coincidencia
+                if mejor_coincidencia and mejor_similitud > 70:  # Umbral de similitud ajustable
                     driver.execute_script("arguments[0].click();", mejor_coincidencia)
-                    print(f"Modelo '{mejor_coincidencia.text}' seleccionado correctamente.")
+                    print(f"Modelo '{mejor_coincidencia.text}' seleccionado correctamente con una similitud de {mejor_similitud}%.")
                 else:
-                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo']}'")
+                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo']}'.")
 
             except Exception as e:
                 print(f"Error al seleccionar el modelo: {e}")

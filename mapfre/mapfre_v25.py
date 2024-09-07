@@ -13,7 +13,7 @@ import glob
 import sys
 
 
-def configure_webdriver():
+def configure_webdriversafari():
     """Configura el WebDriver para Safari en macOS."""
     
     if sys.platform == 'darwin':
@@ -32,16 +32,47 @@ def configure_webdriver():
     else:
         raise EnvironmentError("Este código está configurado para usar Safari exclusivamente en macOS.")
 
+def chrome_default(driver):
+    """Devuelve el WebDriver predeterminado si ya está configurado."""
+    try:
+        return driver
+    except:
+        return webdriver.Chrome()
+
+def configure_webdriver(download_path,chrome_testing=False):
+    """Configura el WebDriver según el sistema operativo y las opciones."""
+    
+    
+    # Configurar opciones de Chrome
+    chrome_options = Options()
+    chrome_options.add_experimental_option("prefs", {
+        "download.default_directory": download_path,  # Ruta donde se guardarán los archivos descargados
+        "profile.default_content_settings.popups": 0,
+        "directory_upgrade": True,
+        "plugins.always_open_pdf_externally": True  # Esta configuración debería evitar abrir el diálogo de impresión
+    })
+    
+    if chrome_testing:
+        return webdriver.Chrome(options=chrome_options)
+    
+    if sys.platform == 'darwin':
+        return chrome_default(webdriver.Safari())
+    elif sys.platform == 'win32':
+        return chrome_default(webdriver.Edge())
+    else:
+        return chrome_default(webdriver.Firefox())
 
 
 def mapfre_cotizador(ruta_descarga,datos_cotizacion):
     usuario = '766609414'
     contraseña = '76660941'
     login_url = 'https://portalcorredores.mapfre.cl/'
+    login2 = 'https://portalcorredores.mapfre.cl/'
+    login3 = 'https://portalcorredores.mapfre.cl/Home'
 
     data_cliente =  datos_cotizacion
-    driver = configure_webdriver()
-
+    driver = configure_webdriver(ruta_descarga,chrome_testing=True)
+    #driver = configure_webdriversafari()
 
     # Abrir la página de inicio de sesión
     driver.get(login_url)
