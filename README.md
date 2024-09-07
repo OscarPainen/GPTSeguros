@@ -12,12 +12,12 @@ Se crea una interfaz grafica con la que es posible interactuar para obtener info
 
 ### Activos
 
-Actualmente solo funciona la descarga automatica del archivo para BCI, Renta y Sura (requiere interaccion manual).
+Actualmente solo funciona la descarga automatica del archivo para BCI, Renta, Sura y Mapfre.
 
-* HDI tuvo una actualizacion de pagina
-* Mapfre solo funciona en Safari (Buscar solucion para windows)
-* FID hay que hacerlo desde 0 
-* ANS pide generar un PDF por cada seguro
+* HDI solo admite clientes antiguos.
+* SURA requiere interaccion manual.
+* FID problemas de click por iframe.
+* ANS pide generar un PDF por cada seguro.
 
 Al hacer las conexiones con la interfaz grafica hay problemas para la realizacion en orden; algunas soluciones son: boton que ejecute por modelo usando la informacion global.
 

@@ -14,6 +14,7 @@ import glob
 import sys
 import shutil
 import json
+from fuzzywuzzy import fuzz
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente (sin puntos ni guión): ")
@@ -146,43 +147,53 @@ def renta_cotizador(ruta_descarga,datos_cotizacion):
         patente = driver.find_element(By.XPATH, '// *[ @ id = "patenteUsado"]')
         patente.send_keys(data_cliente['patente'] + Keys.ENTER)
 
-        # Esperar a que la lista desplegable de modelos esté presente
-        modelos_select = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.swal2-select'))
-        )
-
-        # Espera adicional para asegurar que el desplegable esté completamente cargado
-        WebDriverWait(driver, 5).until(
-            lambda d: len(Select(modelos_select).options) > 1  # Asegurarse de que al menos una opción esté presente
-        )
-
-        # Crear una lista de opciones de modelos
-        modelos = Select(modelos_select)
-        lista_modelos = [option.text.strip().lower() for option in modelos.options]
-
-        # Imprimir la lista de modelos disponibles para depuración
-        #print("Modelos disponibles:", lista_modelos)
-
-        # Modelo que quieres comparar
-        modelo_buscado = data_cliente['modelo'].strip().lower()
-
-        # Encuentra la posición del modelo en la lista
-        posicion_modelo = -1
-        for i, modelo in enumerate(lista_modelos):
-            if modelo == modelo_buscado:
-                posicion_modelo = i
-                break
-
-        if posicion_modelo != -1:
-            # Selecciona el modelo en la lista desplegable
-            modelos.select_by_index(posicion_modelo)
-            #print(f"Modelo '{modelo_buscado}' seleccionado en la posición {posicion_modelo}.")
-        else:
-            # Manejar el caso cuando no se encuentra el modelo
-            error_message = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'swal2-content'))
+        try:
+            # Esperar a que la lista desplegable de modelos esté presente
+            modelos_select = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '.swal2-select'))
             )
-            print(f"No se encontró el modelo '{modelo_buscado}': {error_message.text}")
+
+            # Espera adicional para asegurar que el desplegable esté completamente cargado
+            WebDriverWait(driver, 5).until(
+                lambda d: len(Select(modelos_select).options) > 1  # Asegurarse de que al menos una opción esté presente
+            )
+
+            # Crear una lista de opciones de modelos
+            modelos = Select(modelos_select)
+            lista_modelos = [opcion.text.strip().lower() for opcion in modelos.options]
+
+            # Imprimir la lista de modelos disponibles para depuración
+            # print("Modelos disponibles:", lista_modelos)
+
+            # Modelo que quieres comparar
+            modelo_buscado = data_cliente['modelo'].strip().lower()
+
+            # Encuentra la mejor coincidencia utilizando fuzzy matching
+            mejor_coincidencia = None
+            mejor_similitud = 0
+            posicion_modelo = -1
+
+            for i, modelo in enumerate(lista_modelos):
+                similitud = fuzz.ratio(modelo_buscado, modelo.lower())
+                if similitud > mejor_similitud:
+                    mejor_similitud = similitud
+                    mejor_coincidencia = modelo
+                    posicion_modelo = i
+
+            if posicion_modelo != -1 and mejor_similitud > 70:  # Umbral de similitud (ajustable)
+                # Selecciona el modelo en la lista desplegable
+                modelos.select_by_index(posicion_modelo)
+                print(f"Modelo '{mejor_coincidencia}' seleccionado con una similitud del {mejor_similitud}%.")
+            else:
+                # Manejar el caso cuando no se encuentra un modelo similar
+                error_message = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, 'swal2-content'))
+                )
+                print(f"No se encontró un modelo lo suficientemente similar a '{modelo_buscado}': {error_message.text}")
+
+        except Exception as e:
+            print(f"Error al seleccionar el modelo: {e}")
+
 
         # Hacer clic en el botón OK
         boton_ok = WebDriverWait(driver, 10).until(
