@@ -6,6 +6,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
     ElementNotInteractableException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 import time
 import os
 import sys
@@ -78,7 +79,7 @@ def seleccionar_opcion_fuzzy(opciones, valor_cliente):
     mejor_coincidencia = process.extractOne(valor_cliente, textos_opciones, scorer=fuzz.token_sort_ratio)
     if mejor_coincidencia:
         mejor_texto, score = mejor_coincidencia
-        if score > 80:  # Solo seleccionar si la coincidencia es alta
+        if score > 70:  # Solo seleccionar si la coincidencia es alta
             for opcion in opciones:
                 if opcion.text == mejor_texto:
                     opcion.click()
@@ -148,6 +149,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
         iframe = WebDriverWait(driver, 10).until(
                 EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe"))
             )
+        
         try:
             
 
@@ -202,24 +204,27 @@ def fid_cotizador(ruta_descarga,data_cliente):
 
         time.sleep(7)
 
-        # Boton
+        #Boton USADO
         try:
-            # Localizar el label asociado con el botón de radio "Usado"
             label_usado = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, 'label[for="mat-radio-11-input"]'))
             )
-            label_usado.click()  # Hacer clic en el label para activar el botón de radio
-            print("Botón de radio 'Usado' seleccionado haciendo clic en el label.")
+            driver.execute_script("arguments[0].scrollIntoView(true);", label_usado)
+            time.sleep(1)
+            
+            # Forzar el clic con JavaScript
+            driver.execute_script("arguments[0].click();", label_usado)
+            print("Botón de radio 'Usado' seleccionado forzando clic con JavaScript.")
+            
+            # Verificar si fue seleccionado
+            radio_usado = driver.find_element(By.ID, 'mat-radio-11-input')
+            if radio_usado.is_selected():
+                print("Botón de radio 'Usado' correctamente seleccionado.")
+            else:
+                print("Error: el botón de radio 'Usado' no fue seleccionado.")
         except Exception as e:
-            print(f"Error al seleccionar el botón de radio 'Usado' haciendo clic en el label: {e}")
+            print(f"Error al seleccionar el botón de radio 'Usado': {e}")
 
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.invisibility_of_element_located((By.CLASS_NAME, 'loading-indicator'))  # Cambia el selector si tienes un overlay específico
-            )
-            print("Overlay o carga desaparecida.")
-        except Exception as e:
-            print(f"Error al esperar el overlay: {e}")
 
         time.sleep(5)
 
@@ -245,44 +250,8 @@ def fid_cotizador(ruta_descarga,data_cliente):
         except Exception as e:
             print(f"Error al seleccionar la marca: {e}")
 
-        # Rellenar el campo de modelo
-        try:
-            # Paso 1: Abrir el desplegable de Modelo usando JavaScript
-            dropdown_modelo = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, 'mat-select-8'))
-            )
-            driver.execute_script("arguments[0].scrollIntoView(true);", dropdown_modelo)
-            driver.execute_script("arguments[0].click();", dropdown_modelo)  # Forzar el clic con JavaScript
-            print("Desplegable de Modelo abierto con JavaScript.")
-            
-            # Paso 2: Esperar a que las opciones del dropdown se carguen
-            opciones_modelo = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'mat-option'))
-            )
-            print("Opciones de Modelo visibles y cargadas.")
 
-            # Paso 3: Seleccionar la opción correcta utilizando fuzzy matching
-            seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
-
-        except StaleElementReferenceException as stale_error:
-            print(f"Stale element error encontrado. Reintentando...: {stale_error}")
-            try:
-                # Reintentar localizar las opciones si se produce un error de referencia obsoleta
-                opciones_modelo = WebDriverWait(driver, 10).until(
-                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'mat-option'))
-                )
-                seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
-            except Exception as retry_error:
-                print(f"Error al reintentar seleccionar el modelo: {retry_error}")
-
-        except TimeoutException as timeout_error:
-            print(f"Timeout: No se pudieron cargar las opciones a tiempo: {timeout_error}")
-
-        except Exception as e:
-            print(f"Error al seleccionar el modelo usando JavaScript: {e}")
-
-
-        # Paso 3: Rellenar el campo de año
+        # Rellenar el campo de año
         try:
             # Hacer clic para abrir el dropdown de "Año"
             dropdown_anio = WebDriverWait(driver, 10).until(
@@ -317,6 +286,48 @@ def fid_cotizador(ruta_descarga,data_cliente):
         except Exception as e:
             print(f"Error al seleccionar el tipo de combustible: {e}")
 
+        # Rellenar el campo de modelo
+        retries = 0
+        while retries < 15:
+            try:
+                # Paso 1: Abrir el desplegable de Modelo usando JavaScript
+                dropdown_modelo = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID, 'mat-select-8'))
+                )
+                driver.execute_script("arguments[0].scrollIntoView(true);", dropdown_modelo)
+                driver.execute_script("arguments[0].click();", dropdown_modelo)  # Forzar el clic con JavaScript
+                print("Desplegable de Modelo abierto con JavaScript.")
+                
+                # Paso 2: Esperar a que las opciones del dropdown se carguen
+                opciones_modelo = WebDriverWait(driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'mat-option'))
+                )
+                print("Opciones de Modelo visibles y cargadas.")
+
+                # Paso 3: Seleccionar la opción correcta utilizando fuzzy matching
+                seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
+                break
+            except StaleElementReferenceException as stale_error:
+                print(f"Stale element error encontrado. Reintentando...: {stale_error}")
+                retries += 1
+                try:
+                    # Reintentar localizar las opciones si se produce un error de referencia obsoleta
+                    opciones_modelo = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'mat-option'))
+                    )
+                    seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
+                except Exception as retry_error:
+                    print(f"Error al reintentar seleccionar el modelo: {retry_error}")
+
+            except TimeoutException as timeout_error:
+                print(f"Timeout: No se pudieron cargar las opciones a tiempo: {timeout_error}")
+                retries += 1
+            except Exception as e:
+                print(f"Error al seleccionar el modelo usando JavaScript: {e}")
+                break
+        if retries == 5:
+            print(f"No se pudo seleccionar el modelo después de {5} intentos.")
+
         try:
             # Paso 1: Esperar a que el campo de "Rut" esté interactivo y visible
             input_rut = WebDriverWait(driver, 10).until(
@@ -338,9 +349,9 @@ def fid_cotizador(ruta_descarga,data_cliente):
         except Exception as e:
             print(f"Error al rellenar el campo 'Rut': {e}")
 
-
         # --------------------------------
-        time.sleep(10)  
+        time.sleep(3)  
+
         # Paso 5: Hacer clic en el botón "Tarificar"
         try:
             boton_tarificar = WebDriverWait(driver, 10).until(
@@ -348,17 +359,106 @@ def fid_cotizador(ruta_descarga,data_cliente):
             )
             boton_tarificar.click()
 
-            driver.switch_to.default_content()
+            #driver.switch_to.default_content()
             print("Botón 'Tarificar' clicado.")
         except Exception as e:
             print(f"Error al hacer clic en el botón 'Tarificar': {e}")
-        
+
+
+
+        # Tiempo de carga de la tarificacion    
+        time.sleep(30)
+
+        # DESCUENTOS
+        try:
+            # Rellenar el campo 'Descuento Comercial' con 50 usando JavaScript
+            input_descuento_comercial = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'ajusteComercial'))
+            )
+            driver.execute_script("arguments[0].value = '50';", input_descuento_comercial)
+            print("Campo 'Descuento Comercial' rellenado con 50 usando JavaScript.")
+            
+            # Rellenar el campo 'Descuento con cargo a Comisión' con 0 usando JavaScript
+            input_descuento_comision = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'ajusteComision'))
+            )
+            driver.execute_script("arguments[0].value = '0';", input_descuento_comision)
+            print("Campo 'Descuento con cargo a Comisión' rellenado con 0 usando JavaScript.")
+            
+        except Exception as e:
+            print(f"Error al rellenar los campos de descuento: {e}")
+
+
+        try:
+            # Cambiar el valor y disparar evento 'change'
+            driver.execute_script("arguments[0].value = '50'; arguments[0].dispatchEvent(new Event('input'));", input_descuento_comercial)
+            print("Campo 'Descuento Comercial' rellenado con 50 y evento 'input' disparado.")
+            
+            # Repetir para el segundo campo
+            driver.execute_script("arguments[0].value = '0'; arguments[0].dispatchEvent(new Event('input'));", input_descuento_comision)
+            print("Campo 'Descuento con cargo a Comisión' rellenado con 0 y evento 'input' disparado.")
+        except Exception as e:
+            print(f"Error al rellenar los campos de descuento: {e}")
+
+
+        # Retarificar:
+        try:
+            # Esperar hasta que el botón "Retarificar" esté disponible y hacer clic
+            boton_retarificar = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, 'BtnRetarificar'))
+            )
+            boton_retarificar.click()
+            print("Se hizo clic en el botón 'Retarificar'.")
+            
+        except Exception as e:
+            print(f"Error al hacer clic en el botón 'Retarificar': {e}")
+
+        files_before = set(os.listdir(ruta_descarga))
         time.sleep(10)
+        try:
+            # Esperar hasta que el botón "Ver PDF cotización" sea clicable
+            boton_ver_pdf = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "emitir1"))
+            )
+            # Hacer clic en el botón
+            boton_ver_pdf.click()
+            print("Se hizo clic en el botón 'Ver PDF cotización'.")
+            
+        except Exception as e:
+            print(f"Error al hacer clic en el botón 'Ver PDF cotización': {e}")
+
+        time.sleep(10)
+        # Guardar la lista de archivos después de la descarga
+        files_after = set(os.listdir(ruta_descarga))
+        # Definir un nuevo nombre
+        def wait_for_download(path, timeout=60):
+            seconds = 0
+            while seconds < timeout:
+                if any(filename.endswith('.crdownload') for filename in os.listdir(path)):
+                    time.sleep(1)
+                    seconds += 1
+                else:
+                    return True
+            return False
+        if wait_for_download(ruta_descarga):
+            # Identificar el nuevo archivo
+            new_files = files_after - files_before
+            if new_files:
+                downloaded_file = new_files.pop()  # Si hay un archivo nuevo, obtener su nombre
+                print(f"Archivo descargado: {downloaded_file}")
+
+                # Cambiar el nombre del archivo descargado
+                new_name = f'{data_cliente["nombre_asegurado"]}_FID.pdf'  # Cambia este nombre por el que desees
+                os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
+                print(f"Archivo renombrado a: {new_name}")
+            else:
+                print("No se detectaron nuevos archivos descargados.")
+        else:
+            print("Error: La descarga de la cotización de BCI no se completó correctamente.")
+
         driver.switch_to.default_content()
     except Exception as e:
         print(f"Error durante el proceso general: {e}")
-
-
 
     finally:
         # Cerrar el navegador después de completar
