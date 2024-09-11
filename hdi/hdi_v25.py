@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 import time
 import os
+import glob
 import sys
 
 def get_main_data():
@@ -172,6 +173,7 @@ def hdi_cotizador(ruta_descarga,data_cliente):
             )
             print("Validación del RUT completada.")
 
+            time.sleep(5)
             # Ingreso Patente
             patente = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, 'Main_PnlPatente'))
@@ -192,7 +194,7 @@ def hdi_cotizador(ruta_descarga,data_cliente):
              # ----------
             # Ingreso del número de teléfono celular
             celular = driver.find_element(By.ID, 'Main_txtCelular')
-            driver.execute_script("arguments[0].value = arguments[1];", celular, '99999999')
+            driver.execute_script("arguments[0].value = arguments[1];", celular, '95359421')
             print("Número de celular ingresado.")
 
             # Para email
@@ -245,16 +247,17 @@ def hdi_cotizador(ruta_descarga,data_cliente):
         except Exception as e:
             print(f"Error no seleccionó ningún plan: {e}")
 
+        time.sleep(5)
         # Intento aplicar descuento
         try:
             # Aplicación descuento
-            descuento = WebDriverWait(driver, 10).until(
+            descuento = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="Main_descuento"]'))
             )
             descuento.clear()
-            descuento.send_keys(data_cliente['descuento'])
+            descuento.send_keys("15")
 
-            aplicar_descuento = WebDriverWait(driver, 10).until(
+            aplicar_descuento = WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, '// *[ @ id = "Main_Apdescuento"]'))
             )
             aplicar_descuento.click()
@@ -294,15 +297,60 @@ def hdi_cotizador(ruta_descarga,data_cliente):
         except Exception as e:
             print(f"Error no seleccionó ningún plan: {e}")
 
-        # Generar pdf cotizacion
-        pdf_cotiza = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="Main_GenCotizacion"]'))
+        # Esperar a que el botón esté disponible y clicable
+        generar_cotizacion_btn = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.ID, 'Main_GenCotizacion'))
         )
-        pdf_cotiza.click()
 
-        #//*[@id="Main_1632"]/img
+        # Desplazar el botón a la vista (por si está fuera del área visible)
+        driver.execute_script("arguments[0].scrollIntoView();", generar_cotizacion_btn)
 
-        time.sleep(60)
+        # Hacer clic en el botón
+        generar_cotizacion_btn.click()
+
+        # Generar pdf cotizacion
+        # Usamos un XPath para seleccionar cualquier imagen cuyo atributo 'onclick' contenga 'VerCot'
+        img_element = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.XPATH, "//img[contains(@onclick, 'VerCot')]"))
+        )
+
+        # Desplazar el elemento a la vista (opcional si el elemento no está visible)
+        driver.execute_script("arguments[0].scrollIntoView();", img_element)
+
+        # Hacer clic en el elemento
+        img_element.click()
+
+        try:
+                def wait_for_download(path, timeout=60):
+                    seconds = 0
+                    while seconds < timeout:
+                        if any(filename.endswith('.pdf') for filename in os.listdir(path)):
+                            return True
+                        else:
+                            time.sleep(1)
+                            seconds += 1
+                    return False
+
+                if wait_for_download(ruta_descarga):
+                    list_of_files = glob.glob(ruta_descarga + '/*.pdf')  # Buscar archivos PDF en la carpeta de descarga
+                    latest_file = max(list_of_files, key=os.path.getctime)  # Obtener el archivo más reciente por fecha de creación
+
+                    # Obtener el nombre base del archivo (sin la extensión .pdf)
+                    nombre_archivo = os.path.basename(latest_file).split('.')[0]
+                    #print(f"Archivo descargado: {nombre_archivo}")
+
+                    # Definir un nuevo nombre para el archivo
+                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_SURA.pdf")
+                    # Renombrar el archivo
+                    os.rename(latest_file, nuevo_nombre)
+                    print(f"Archivo renombrado a: {nuevo_nombre}")
+                else:
+                    print("Error: La descarga de la cotización de SURA no se completó correctamente.")
+                    
+        except Exception as e:
+                print(f"Ha ocurrido un error durante la descarga del PDF: {e}")
+
+        time.sleep(10)
 
     finally:
         time.sleep(5)  # Esperar antes de cerrar el navegador para observar el resultado

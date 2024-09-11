@@ -12,11 +12,11 @@ Se crea una interfaz grafica con la que es posible interactuar para obtener info
 
 ### Activos
 
-Actualmente solo funciona la descarga automatica del archivo para BCI, Renta, Sura, FID y Mapfre.
+Actualmente solo funciona la descarga automatica del archivo PDF para: BCI, Renta, Sura, FID .
 
-* HDI solo admite clientes antiguos.
-* SURA requiere interaccion manual.
-* ANS pide generar un PDF por cada seguro.
+* Mapfre tiene un detectador anti-automatizadores
+* HDI tuvo una caida actualemnte.
+* ANS se descarto.
 
 Al hacer las conexiones con la interfaz grafica hay problemas para la realizacion en orden; algunas soluciones son: boton que ejecute por modelo usando la informacion global.
 

@@ -72,12 +72,11 @@ def configure_webdriver(download_path,chrome_testing=False):
         return chrome_default(webdriver.Firefox())
 
 
-def renta_cotizador(ruta_descarga,datos_cotizacion):
+def renta_cotizador(ruta_descarga,data_cliente):
     usuario = '766609414'
     contraseña = 'Rts221184rts'
     login_url = 'https://sgi.rentanacional.cl/'
 
-    data_cliente =  datos_cotizacion
     driver = configure_webdriver(ruta_descarga,chrome_testing=True)
     try:
         # Guardar la lista de archivos antes de la descarga
@@ -180,7 +179,7 @@ def renta_cotizador(ruta_descarga,datos_cotizacion):
                     mejor_coincidencia = modelo
                     posicion_modelo = i
 
-            if posicion_modelo != -1 and mejor_similitud > 70:  # Umbral de similitud (ajustable)
+            if posicion_modelo != -1 and mejor_similitud > 50:  # Umbral de similitud (ajustable)
                 # Selecciona el modelo en la lista desplegable
                 modelos.select_by_index(posicion_modelo)
                 print(f"Modelo '{mejor_coincidencia}' seleccionado con una similitud del {mejor_similitud}%.")

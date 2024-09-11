@@ -12,19 +12,6 @@ import os
 import sys
 from fuzzywuzzy import fuzz, process
 
-def get_download_path():
-    """Devuelve la ruta donde se guardarán las descargas."""
-    if os.name == 'nt':  # Windows
-        return os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'cotizacion')
-    else:  # macOS, Linux
-        return os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion')
-
-def create_download_path():
-    """Crea la carpeta de descargas si no existe."""
-    download_path = get_download_path()
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)
-    return download_path
 
 def chrome_default(driver):
     """Devuelve el WebDriver predeterminado si ya está configurado."""
@@ -288,7 +275,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
 
         # Rellenar el campo de modelo
         retries = 0
-        while retries < 15:
+        while retries < 3:
             try:
                 # Paso 1: Abrir el desplegable de Modelo usando JavaScript
                 dropdown_modelo = WebDriverWait(driver, 10).until(
@@ -325,7 +312,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
             except Exception as e:
                 print(f"Error al seleccionar el modelo usando JavaScript: {e}")
                 break
-        if retries == 5:
+        if retries == 3:
             print(f"No se pudo seleccionar el modelo después de {5} intentos.")
 
         try:
