@@ -2,7 +2,16 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import simpledialog
 from PIL import Image, ImageTk
+
+# ----------------------------------
+# Cotizadores
 from bci import bci_cotizador, get_download_path, move_pdfs
+from sura import sura_cotizador
+from renta import renta_cotizador
+from hdi import hdi_cotizador
+from fid import fid_cotizador
+from mapfre import mapfre_cotizador 
+# ----------------------------------
 
 ruta_descarga = get_download_path()
 
@@ -18,12 +27,17 @@ def realizar_cotizacion():
         "anio": entry_anio.get(),
     }
 
-    # Llama a la función bci_cotizador para cotizar en BCI
+    # BCI
     bci_cotizador(ruta_descarga, datos_cotizacion)
-    
-    messagebox.showinfo("Resultado", "Cotización lista")
-    
-    move_pdfs() #mueve los pdf - reahacer
+    messagebox.showinfo("Resultado", "Cotización BCI Completada")
+    # SURA
+    sura_cotizador(ruta_descarga,datos_cotizacion)
+    messagebox.showinfo("Resultado", "Cotización SURA Completada")
+    # Renta
+    sura_cotizador(ruta_descarga,datos_cotizacion)
+    messagebox.showinfo("Resultado", "Cotización RENTA Completada")
+
+    #move_pdfs() #mueve los pdf - reahacer
     root.quit()
 
 def ventana_bci():

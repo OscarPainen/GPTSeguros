@@ -30,20 +30,6 @@ def get_main_data():
     }
 
 
-def get_download_path():
-    """Devuelve la ruta donde se guardarán las descargas."""
-    if os.name == 'nt':  # Windows
-        return os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'cotizacion')
-    else:  # macOS, Linux
-        return os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion')
-
-def create_download_path():
-    """Crea la carpeta de descargas si no existe."""
-    download_path = get_download_path()
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)
-    return download_path
-
 
 def chrome_default(driver):
     """Devuelve el WebDriver predeterminado si ya está configurado."""
@@ -308,7 +294,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="btnCotizar"]'))
             )
             driver.execute_script("arguments[0].scrollIntoView();", btn_next)
-
+            
             attempts = 0
             while attempts < 25:
                 try:
@@ -321,9 +307,11 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     driver.execute_script("arguments[0].click();", btn_next)
                     attempts += 1
 
-            if attempts == 5:
+            if attempts == 25:
                 print("No se pudo hacer clic en el botón 'Siguiente' después de varios intentos.")
 
+
+            time.sleep(15)
             # Elegir plan según deducible
             try:
                 plan = WebDriverWait(driver, 10).until(
@@ -345,11 +333,20 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
             valor_cuota.click()
 
             # Emitir PDF cotización
-            btn_cotiza = WebDriverWait(driver, 10).until(
+            btn_cotiza = WebDriverWait(driver, 20).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="botones-tour"]/li[1]/button'))
             )
             time.sleep(1)
             btn_cotiza.click()
+
+            # DESCARGA
+            btn_descarga = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//button[contains(text(),"Abrir")]'))
+        )
+            time.sleep(1)
+            btn_descarga.click()
+
+
 
             time.sleep(60)
             # ---------------------
@@ -392,8 +389,9 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
 
             finally:
                 time.sleep(5)  # Esperar antes de cerrar el navegador para observar el resultado
-                driver.quit()
+                
 
     except Exception as e:
         print(f"Ha ocurrido un error general en la ejecución del cotizador: {e}")
-        driver.quit()
+        
+    driver.quit()

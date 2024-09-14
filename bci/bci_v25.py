@@ -60,18 +60,23 @@ def get_main_data():
         "nombre_asegurado": nombre_asegurado,
         "rut": rut}
 
-def get_download_path():
-    """Devuelve la ruta donde se guardarán las descargas."""
+def get_download_path(data_cliente):
+    """
+    Devuelve la ruta donde se guardarán las descargas y crea la carpeta si no existe.
+    """
+    # Paso 1: Obtener la ruta de descarga según el sistema operativo
     if os.name == 'nt':  # Windows
-        return os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'cotizacion')
+        download_path = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'cotizacion')
     else:  # macOS, Linux
-        return os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion')
-
-def create_download_path():
-    """Crea la carpeta de descargas si no existe."""
-    download_path = get_download_path()
+        download_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion', data_cliente['nombre_asegurado'])
+    
+    # Paso 2: Crear la carpeta de descarga si no existe
     if not os.path.exists(download_path):
         os.makedirs(download_path)
+        print(f"Directorio creado: {download_path}")
+    else:
+        print(f"Directorio ya existe: {download_path}")
+    
     return download_path
 
 
@@ -82,35 +87,29 @@ def chrome_default(driver):
     except:
         return webdriver.Chrome()
 
-def configure_webdriver(download_path,chrome_testing=False):
-    """Configura el WebDriver según el sistema operativo y las opciones."""
-    
-    
-    # Configurar opciones de Chrome
+def configure_webdriver(download_path):
+    """Configura y devuelve un WebDriver de Chrome en modo headless."""
     chrome_options = Options()
+    
+    # Configuración para evitar la carga de la interfaz visual
+    chrome_options.add_argument('--headless')  # Ejecuta Chrome en modo headless (sin interfaz)
+    chrome_options.add_argument('--no-sandbox')  # Necesario para algunos entornos de CI/CD
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Reduce problemas de recursos en contenedores
+    
+    # Configuración de las preferencias de descarga
     chrome_options.add_experimental_option("prefs", {
-        "download.default_directory": download_path,  # Ruta donde se guardarán los archivos descargados
-        "profile.default_content_settings.popups": 0,
-        "directory_upgrade": True,
-        "plugins.always_open_pdf_externally": True  # Esta configuración debería evitar abrir el diálogo de impresión
+        "download.default_directory": download_path,
+        "plugins.always_open_pdf_externally": True
     })
     
-    if chrome_testing:
-        return webdriver.Chrome(options=chrome_options)
-    
-    if sys.platform == 'darwin':
-        return chrome_default(webdriver.Safari())
-    elif sys.platform == 'win32':
-        return chrome_default(webdriver.Edge())
-    else:
-        return chrome_default(webdriver.Firefox())
+    return webdriver.Chrome(options=chrome_options)
 
-def bci_cotizador(ruta_descarga,data_cliente):
+def bci_cotizador(data_cliente):
     usuario = '766609414'
     contraseña = '76660941rts'
     
-    # ruta_descarga = create_download_path() 
-    driver = configure_webdriver(ruta_descarga,chrome_testing=True)
+    ruta_descarga = get_download_path(data_cliente) 
+    driver = configure_webdriver(ruta_descarga)
     
     # Main code
     try:

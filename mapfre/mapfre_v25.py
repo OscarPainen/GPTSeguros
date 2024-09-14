@@ -63,14 +63,13 @@ def configure_webdriver(download_path,chrome_testing=False):
         return chrome_default(webdriver.Firefox())
 
 
-def mapfre_cotizador(ruta_descarga,datos_cotizacion):
+def mapfre_cotizador(ruta_descarga,data_cliente):
     usuario = '766609414'
     contraseña = '76660941'
     login_url = 'https://portalcorredores.mapfre.cl/'
     login2 = 'https://portalcorredores.mapfre.cl/'
     login3 = 'https://portalcorredores.mapfre.cl/Home'
 
-    data_cliente =  datos_cotizacion
     driver = configure_webdriver(ruta_descarga,chrome_testing=True)
     #driver = configure_webdriversafari()
 
@@ -155,7 +154,7 @@ def mapfre_cotizador(ruta_descarga,datos_cotizacion):
             except Exception as e:
                 print(f"Error al encontrar el campo de patente en la nueva pestaña: {e}")
 
-            patente.send_keys('TLBK94' + Keys.ENTER)
+            patente.send_keys(data_cliente['patente'] + Keys.ENTER)
 
             # Franquicia aduanera
             aduanera = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtFranquiciaNo"]')
@@ -180,7 +179,14 @@ def mapfre_cotizador(ruta_descarga,datos_cotizacion):
             time.sleep(7)
 
             # Calcular Cotización
-            calcular = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_ImgCalcular"]')
+            try:
+                calcular = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH,'//*[@id="ctl00_ContentPlaceHolder1_ImgCalcular"]'))
+                )
+            except Exception as e:
+                print(f"Error al encontrar el campo de patente en la nueva pestaña: {e}")
+
+            #calcular = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_ImgCalcular"]')
             calcular.click()
             time.sleep(15)
 
