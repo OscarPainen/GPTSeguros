@@ -3,14 +3,31 @@
 Durante este proyecto ire desarrollando el trabajo a realizar con GPT-Seguros.
 El trabajo consiste en realizar un 'cotizador' automatico de paginas webs con Python.
 Se hacen uso de 8 diferentes paginas de seguros.
-Se crea una interfaz grafica con la que es posible interactuar para obtener informacion
+
+* https://portalcorredores.mapfre.cl/
+* https://www.hdicorredores.cl/homeCorredores.asp
+* https://oficinavirtual.bciseguros.cl/Home/LinkLogin?ReturnUrl=%2fprincipal%2fprincipal
+* https://seguros.sura.cl/acceso/corredor
+* https://portal.fidseguros.cl/Fidnet_UI/Logins.aspx?Type=2
+* https://sgi.rentanacional.cl/
+* https://www.ant.cl/portal/account/login
+* https://apps4.realechile.cl/portalCorredores/login
+
+
+Se crea una interfaz grafica con la que es posible interactuar para obtener informacion de los PDF's.
+### USO:
+- correr 'cotizador.py' para ejecutar cotizacion por consola.
+- 'themes.py' corresponde a la interfaz grafica del cotizador, realiza cotizacion.
+- requirements.txt corresponde a las intalaciones necesarias para correr los codigos anteriores.
+- test.ipynb son pruebas para revisar el cotizador compañia a compañia.
+- En la carpeta build se encuentra el cotizador empaquetado como ejecutable.
 
 ### Version 1
 * Autos de uso particular usados
 * input: por teclado
 * output: pdf's con cotizaciones
 
-### Version Beta
+#### Probelmas
 
 * BCI tuvo problemas al considerar modelos.
 * Sura tuvo problemas al reconocer la Marca.
@@ -22,7 +39,7 @@ Se crea una interfaz grafica con la que es posible interactuar para obtener info
 * aumentar los tiempos de espera.
 * no carga bien la pagina del cotizador.
 
-### Activos
+### Cotizaciones
 
 Actualmente solo funciona la descarga automatica del archivo PDF para: BCI, Renta, Sura, FID .
 
