@@ -1,11 +1,11 @@
 import os
 #from ans import cotizador_ant
-from bci import bci_cotizador , get_download_path
-from renta import renta_cotizador
-from mapfre import mapfre_cotizador
-from hdi import hdi_cotizador
-from sura import sura_cotizador
-from fid import fid_cotizador
+from selenium_gpt.bci import bci_cotizador, get_download_path
+from selenium_gpt.renta import renta_cotizador
+from selenium_gpt.mapfre import mapfre_cotizador
+from selenium_gpt.hdi import hdi_cotizador
+from selenium_gpt.sura import sura_cotizador
+from selenium_gpt.fid import fid_cotizador
 
 data_cliente = {
         "patente": 'PGWP88',
