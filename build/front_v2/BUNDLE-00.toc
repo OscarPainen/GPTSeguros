@@ -1,3 +1,0 @@
-([('front_v2',
-   '/Users/oscaritoandres/Desktop/Work/GPT Seguros/gpt_cotizador/dist/front_v2',
-   'EXECUTABLE')],)
