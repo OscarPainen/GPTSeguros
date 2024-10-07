@@ -13,19 +13,22 @@ Se hacen uso de 8 diferentes paginas de seguros.
 * https://www.ant.cl/portal/account/login
 * https://apps4.realechile.cl/portalCorredores/login
 
+### Estructtura
 
+El trabajo contiene carpetas de trabajo **selenium** y **request**. Ademas contiene la carpeta *utils* donde se encuentran archivos utiles para el proyecto tales como 'requirements' o 'graph' que son codigo basales inicialmente. **gptsite** viene respecto a lo necesario para django junto con 'manage.py'.
+
+### Version 1
 Se crea una interfaz grafica con la que es posible interactuar para obtener informacion de los PDF's.
-### USO:
+* Autos de uso particular usados
+* input: data_cliente = "patente","marca","modelo","año","nombre_asegurado","rut"
+* output: pdf's con cotizaciones
+
+#### USO:
 - correr 'cotizador.py' para ejecutar cotizacion por consola.
 - 'themes.py' corresponde a la interfaz grafica del cotizador, realiza cotizacion.
 - requirements.txt corresponde a las intalaciones necesarias para correr los codigos anteriores.
 - test.ipynb son pruebas para revisar el cotizador compañia a compañia.
 - En la carpeta build se encuentra el cotizador empaquetado como ejecutable.
-
-### Version 1
-* Autos de uso particular usados
-* input: por teclado
-* output: pdf's con cotizaciones
 
 #### Probelmas
 
@@ -39,14 +42,12 @@ Se crea una interfaz grafica con la que es posible interactuar para obtener info
 * aumentar los tiempos de espera.
 * no carga bien la pagina del cotizador.
 
-### Cotizaciones
-
+#### Cotizaciones
 Actualmente solo funciona la descarga automatica del archivo PDF para: BCI, Renta, Sura, FID .
 
 * Mapfre tiene un detectador anti-automatizadores
 * HDI tuvo una caida actualemnte.
 * ANS se descarto.
-
 
 Al hacer las conexiones con la interfaz grafica hay problemas para la realizacion en orden; algunas soluciones son: boton que ejecute por modelo usando la informacion global.
 
@@ -54,4 +55,6 @@ Al hacer las conexiones con la interfaz grafica hay problemas para la realizacio
 * Reale: Hay que hacerlo desde 0
 * Zurich: Tiene precios atractivos
 
+### Version 2
+Traspasar la idea realizada en la V1 a una aplicacion web atraves de django. 
 

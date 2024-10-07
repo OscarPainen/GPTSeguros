@@ -26,7 +26,7 @@ def main():
     print("5. Sura")
     print("6. FID")
     print("7. Salir")
-    opcion = input("Ingrese el número de la opción deseada: ")
+    opcion = "2" #input("Ingrese el número de la opción deseada: ")
 
     # Cotizador BCI - OK
     # Kia rio 3
