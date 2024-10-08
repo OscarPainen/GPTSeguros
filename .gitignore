@@ -1,0 +1,62 @@
+# Entornos virtuales
+venv/
+env/
+myenv/
+*.pyc
+__pycache__/
+
+# Configuraciones locales
+.env
+*.env
+
+# Archivos de log
+*.log
+
+# Bases de datos locales
+db.sqlite3
+*.sqlite3
+
+# Archivos de migraciones de Django
+**/migrations/**
+
+# Archivos de cache de Python
+*.py[cod]
+*$py.class
+
+# Archivos de configuración de IDE
+.idea/
+.vscode/
+
+# Archivos de compilación de macOS y Linux
+.DS_Store
+*.swp
+*~
+
+# Archivos de caché de Django
+staticfiles/
+media/
+
+# Archivos de compilación de frontend
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Archivos de PyInstaller
+*.spec
+
+# Archivos generados de testing
+.coverage
+*.cover
+*.py,cover
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+
+# Reportes de cobertura en pytest
+coverage.xml
+*.coveragerc
+
+# Archivos de depuración y profiling
+*.prof
+*.profraw
