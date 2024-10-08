@@ -1,10 +1,10 @@
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium import webdriver
+from selenium_gpt.webdriver.common.keys import Keys
+from selenium_gpt.webdriver.support.ui import WebDriverWait
+from selenium_gpt.webdriver.support.ui import Select
+from selenium_gpt.webdriver.support import expected_conditions as EC
+from selenium_gpt.webdriver.chrome.options import Options
+from selenium_gpt.webdriver.common.by import By
+from selenium_gpt import webdriver
 import time
 import os
 import glob

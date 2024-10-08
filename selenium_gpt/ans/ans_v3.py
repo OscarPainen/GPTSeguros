@@ -1,10 +1,10 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, ElementNotInteractableException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium_gpt import webdriver
+from selenium_gpt.webdriver.common.by import By
+from selenium_gpt.webdriver.support.ui import WebDriverWait
+from selenium_gpt.webdriver.support import expected_conditions as EC
+from selenium_gpt.common.exceptions import TimeoutException, ElementNotInteractableException
+from selenium_gpt.webdriver.common.keys import Keys
+from selenium_gpt.webdriver.common.action_chains import ActionChains
 import time
 import sys
 
