@@ -1,13 +1,15 @@
-from selenium_gpt import webdriver
-from selenium_gpt.webdriver.common.by import By
-from selenium_gpt.webdriver.support.ui import WebDriverWait
-from selenium_gpt.webdriver.support import expected_conditions as EC
-from selenium_gpt.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException, \
-    ElementNotInteractableException
-from selenium_gpt.webdriver.common.action_chains import ActionChains
-from selenium_gpt.webdriver.chrome.options import Options
-import time
 import os
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
+from fuzzywuzzy import fuzz, process
 import glob
 import sys
 
@@ -159,7 +161,7 @@ def hdi_cotizador(ruta_descarga,data_cliente):
             input_rut = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, 'Main_txtRut'))
             )
-            input_rut.send_keys(data_cliente['rut'])
+            input_rut.send_keys(data_cliente['rut_cliente'])
             print("RUT ingresado.")
 
             # Hacer clic fuera del campo de RUT para activar la validación
@@ -179,7 +181,7 @@ def hdi_cotizador(ruta_descarga,data_cliente):
                 EC.presence_of_element_located((By.ID, 'Main_PnlPatente'))
             )
             patente.clear()
-            patente.send_keys(data_cliente['patente'])
+            patente.send_keys(data_cliente['patente_vehiculo'])
 
             # Carga información vehículo
             load_car = WebDriverWait(driver, 10).until(
@@ -340,7 +342,7 @@ def hdi_cotizador(ruta_descarga,data_cliente):
                     #print(f"Archivo descargado: {nombre_archivo}")
 
                     # Definir un nuevo nombre para el archivo
-                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_SURA.pdf")
+                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_cliente']}_SURA.pdf")
                     # Renombrar el archivo
                     os.rename(latest_file, nuevo_nombre)
                     print(f"Archivo renombrado a: {nuevo_nombre}")

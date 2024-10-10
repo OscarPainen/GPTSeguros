@@ -1,15 +1,15 @@
-from selenium_gpt import webdriver
-from selenium_gpt.webdriver.chrome.service import Service as ChromeService
-from selenium_gpt.webdriver.chrome.options import Options as ChromeOptions
-from selenium_gpt.webdriver.common.by import By
-from selenium_gpt.webdriver.support.ui import WebDriverWait
-from selenium_gpt.webdriver.support import expected_conditions as EC
-from selenium_gpt.webdriver.support.ui import Select
-from selenium_gpt.webdriver.common.keys import Keys
-from selenium_gpt.webdriver.common.action_chains import ActionChains
-from selenium_gpt.webdriver.chrome.options import Options
-import time
 import os
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
+from fuzzywuzzy import fuzz, process
 import glob
 import sys
 import shutil
@@ -139,12 +139,12 @@ def renta_cotizador(ruta_descarga,data_cliente):
 
         # Rut cliente
         rut = driver.find_element(By.XPATH, '//*[@id="rut-contratante"]')
-        rut.send_keys(data_cliente['rut'] + Keys.ENTER)
+        rut.send_keys(data_cliente['rut_cliente'] + Keys.ENTER)
         time.sleep(15)
 
         # Patente vehículo cliente
         patente = driver.find_element(By.XPATH, '// *[ @ id = "patenteUsado"]')
-        patente.send_keys(data_cliente['patente'] + Keys.ENTER)
+        patente.send_keys(data_cliente['patente_vehiculo'] + Keys.ENTER)
 
         try:
             # Esperar a que la lista desplegable de modelos esté presente
@@ -296,7 +296,7 @@ def renta_cotizador(ruta_descarga,data_cliente):
                 print(f"Archivo descargado: {downloaded_file}")
 
                 # Cambiar el nombre del archivo descargado
-                name = data_cliente['nombre_asegurado']
+                name = data_cliente['nombre_cliente']
                 new_name = f'{name}_RENTA.pdf'  # Cambia este nombre por el que desees
                 os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
                 print(f"Archivo renombrado a: {new_name}")

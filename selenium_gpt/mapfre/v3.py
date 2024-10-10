@@ -1,12 +1,15 @@
-from selenium_gpt.webdriver.common.keys import Keys
-from selenium_gpt.webdriver.support.ui import WebDriverWait
-from selenium_gpt.webdriver.support.ui import Select
-from selenium_gpt.webdriver.support import expected_conditions as EC
-from selenium_gpt.webdriver.chrome.options import Options
-from selenium_gpt.webdriver.common.by import By
-from selenium_gpt import webdriver
-import time
 import os
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
+from fuzzywuzzy import fuzz, process
 import glob
 import sys
 import logging
@@ -118,7 +121,7 @@ def mapfre_cotizador(ruta_descarga, data_cliente):
 
         # Ingresar datos del cliente
         patente = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtNumMatricula"]')))
-        patente.send_keys(data_cliente['patente'] + Keys.ENTER)
+        patente.send_keys(data_cliente['patente_vehiculo'] + Keys.ENTER)
         
         aduanera = driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_rbtFranquiciaNo"]')
         aduanera.click()
@@ -149,7 +152,7 @@ def mapfre_cotizador(ruta_descarga, data_cliente):
 
         # Esperar la descarga y renombrar el archivo
         if wait_for_download(ruta_descarga):
-            nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_Mapfre.pdf")
+            nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_cliente']}_Mapfre.pdf")
             rename_latest_file(ruta_descarga, nuevo_nombre)
         else:
             logging.error("La descarga de la cotización no se completó correctamente.")

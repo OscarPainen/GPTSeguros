@@ -1,15 +1,14 @@
-from selenium_gpt import webdriver
-from selenium_gpt.webdriver.common.by import By
-from selenium_gpt.webdriver.support.ui import WebDriverWait
-from selenium_gpt.webdriver.support import expected_conditions as EC
-from selenium_gpt.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException, \
-    ElementNotInteractableException, StaleElementReferenceException
-from selenium_gpt.webdriver.common.action_chains import ActionChains
-from selenium_gpt.webdriver.chrome.options import Options
-from selenium_gpt.webdriver.common.keys import Keys
-import time
 import os
-import sys
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
 from fuzzywuzzy import fuzz, process
 
 
@@ -165,7 +164,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
                 EC.element_to_be_clickable((By.ID, 'mat-input-1'))  # Usar el ID del campo de patente
             )
             input_patente.clear()
-            input_patente.send_keys(data_cliente['patente'])  # Rellenar el campo con la patente
+            input_patente.send_keys(data_cliente['patente_vehiculo'])  # Rellenar el campo con la patente
             print("Patente ingresada.")
 
             # Hacer clic en el cuerpo para que se actualice la información
@@ -232,7 +231,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
             print("Opciones de Marca cargadas.")
             
             # Paso 3: Seleccionar la opción correcta usando fuzzy matching
-            seleccionar_opcion_fuzzy(opciones_marca, data_cliente['marca'])
+            seleccionar_opcion_fuzzy(opciones_marca, data_cliente['marca_vehiculo'])
             
         except Exception as e:
             print(f"Error al seleccionar la marca: {e}")
@@ -252,7 +251,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
             )
 
             # Seleccionar la opción que coincida con data_cliente['anio']
-            seleccionar_opcion_fuzzy(opciones_anio, data_cliente['anio'])
+            seleccionar_opcion_fuzzy(opciones_anio, data_cliente['año_vehiculo'])
         except Exception as e:
             print(f"Error al seleccionar el año: {e}")
 
@@ -292,7 +291,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
                 print("Opciones de Modelo visibles y cargadas.")
 
                 # Paso 3: Seleccionar la opción correcta utilizando fuzzy matching
-                seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
+                seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo_vehiculo'])
                 break
             except StaleElementReferenceException as stale_error:
                 print(f"Stale element error encontrado. Reintentando...: {stale_error}")
@@ -302,7 +301,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
                     opciones_modelo = WebDriverWait(driver, 10).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'mat-option'))
                     )
-                    seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo'])
+                    seleccionar_opcion_fuzzy(opciones_modelo, data_cliente['modelo_vehiculo'])
                 except Exception as retry_error:
                     print(f"Error al reintentar seleccionar el modelo: {retry_error}")
 
@@ -325,8 +324,8 @@ def fid_cotizador(ruta_descarga,data_cliente):
             input_rut.clear()
             
             # Paso 3: Ingresar el valor de "Rut" desde la variable data_cliente
-            input_rut.send_keys(data_cliente['rut'])
-            print(f"Campo 'Rut' rellenado con: {data_cliente['rut']}")
+            input_rut.send_keys(data_cliente['rut_cliente'])
+            print(f"Campo 'Rut' rellenado con: {data_cliente['rut_cliente']}")
 
             # Hacer clic en el cuerpo para que se actualice la información
             body = driver.find_element(By.TAG_NAME, 'body')
@@ -435,7 +434,7 @@ def fid_cotizador(ruta_descarga,data_cliente):
                 print(f"Archivo descargado: {downloaded_file}")
 
                 # Cambiar el nombre del archivo descargado
-                new_name = f'{data_cliente["nombre_asegurado"]}_FID.pdf'  # Cambia este nombre por el que desees
+                new_name = f'{data_cliente["nombre_cliente"]}_FID.pdf'  # Cambia este nombre por el que desees
                 os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
                 print(f"Archivo renombrado a: {new_name}")
             else:

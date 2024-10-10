@@ -1,19 +1,20 @@
 #codigo para Sura
-from selenium_gpt.webdriver.support.ui import Select
-from selenium_gpt.webdriver.support.ui import WebDriverWait
-from selenium_gpt.webdriver.support import expected_conditions as EC
-from selenium_gpt.webdriver.chrome.service import Service
-from selenium_gpt.webdriver.common.by import By
-from selenium_gpt.common.exceptions import TimeoutException, ElementClickInterceptedException
-from selenium_gpt.webdriver.common.action_chains import ActionChains
-from selenium_gpt import webdriver
-from selenium_gpt.webdriver.chrome.options import Options
-import time
 import os
+import time
+import logging
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
+from fuzzywuzzy import fuzz, process
 import sys
 import glob
 import json
-from fuzzywuzzy import fuzz
+
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente (sin puntos ni guión): ")
@@ -172,7 +173,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 )
 
                 # Ingresar el RUT
-                rut_asegurado_input.send_keys(data_cliente['rut'])
+                rut_asegurado_input.send_keys(data_cliente['rut_cliente'])
                 found_rut = True
                 break
             except TimeoutException:
@@ -207,13 +208,13 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
             patente = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_Patente"]'))
             )
-            patente.send_keys(data_cliente['patente'])
+            patente.send_keys(data_cliente['patente_vehiculo'])
 
             # Ingresar año del vehiculo
             anio = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_Ano"]'))
             )
-            anio.send_keys(data_cliente['anio'])
+            anio.send_keys(data_cliente['año_vehiculo'])
 
             # -----------------
             # Selección de marca usando JavaScript
@@ -230,7 +231,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 find_marca = WebDriverWait(driver, 20).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_MarcaID-list"]/span/input'))
                 )
-                driver.execute_script("arguments[0].value = arguments[1];", find_marca, data_cliente['marca'])
+                driver.execute_script("arguments[0].value = arguments[1];", find_marca, data_cliente['marca_vehiculo'])
                 time.sleep(2)  # Esperar para que se carguen las opciones filtradas
 
                 # Buscar todas las opciones de la lista desplegable
@@ -240,7 +241,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
 
                 # Seleccionar la opción que mejor coincida con lo escrito
                 mejor_coincidencia = None
-                texto_buscado = data_cliente['marca'].lower()
+                texto_buscado = data_cliente['marca_vehiculo'].lower()
                 
                 for opcion in opciones_marca:
                     texto_opcion = opcion.text.strip().lower()
@@ -252,7 +253,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     driver.execute_script("arguments[0].click();", mejor_coincidencia)
                     print(f"Marca '{mejor_coincidencia.text}' seleccionada correctamente.")
                 else:
-                    print(f"No se encontró ninguna coincidencia adecuada para la marca '{data_cliente['marca']}'")
+                    print(f"No se encontró ninguna coincidencia adecuada para la marca '{data_cliente['marca_vehiculo']}'")
 
             except Exception as e:
                 print(f"Error al seleccionar la marca: {e}")
@@ -271,7 +272,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 find_modelo = WebDriverWait(driver, 20).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_ModeloID-list"]/span/input'))
                 )
-                driver.execute_script("arguments[0].value = arguments[1];", find_modelo, data_cliente['modelo'])
+                driver.execute_script("arguments[0].value = arguments[1];", find_modelo, data_cliente['modelo_vehiculo'])
                 time.sleep(2)  # Esperar para que se carguen las opciones filtradas
 
                 # Buscar todas las opciones de la lista desplegable
@@ -282,7 +283,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 # Seleccionar la opción con la mayor coincidencia utilizando fuzzy matching
                 mejor_coincidencia = None
                 mejor_similitud = 0
-                texto_buscado = data_cliente['modelo'].lower()
+                texto_buscado = data_cliente['modelo_vehiculo'].lower()
 
                 for opcion in opciones_modelo:
                     texto_opcion = opcion.text.strip().lower()
@@ -296,7 +297,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     driver.execute_script("arguments[0].click();", mejor_coincidencia)
                     print(f"Modelo '{mejor_coincidencia.text}' seleccionado correctamente con una similitud de {mejor_similitud}%.")
                 else:
-                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo']}'.")
+                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo_vehiculo']}'.")
 
             except Exception as e:
                 print(f"Error al seleccionar el modelo: {e}")
@@ -437,7 +438,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     #print(f"Archivo descargado: {nombre_archivo}")
 
                     # Definir un nuevo nombre para el archivo
-                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_SURA.pdf")
+                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_cliente']}_SURA.pdf")
                     # Renombrar el archivo
                     os.rename(latest_file, nuevo_nombre)
                     print(f"Archivo renombrado a: {nuevo_nombre}")
