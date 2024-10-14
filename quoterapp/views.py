@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import CotizacionForm
 import logging
-from selenium_gpt import cotizar
+from selenium_gpt import cotizar as cotizador
 # Create your views here.
 import subprocess
 
@@ -42,8 +42,9 @@ def RealizarCotizacion(request):
                 logger.debug(f"Datos de cotización preparados: {datos_cotizacion}")
                 
                 # Llamar a la función cotizar
-                cotizar(**datos_cotizacion)
                 
+                cotizador.cotizar(datos_cotizacion)
+
                 return HttpResponse(f"Resultado de la cotización: ok")
             
             except Exception as e:
