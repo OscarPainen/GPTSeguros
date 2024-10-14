@@ -12,7 +12,11 @@ def ejecutar_en_hilo(cotizador_en_uso, nombre, ruta_descarga, datos_cotizacion):
     thread = threading.Thread( args=(cotizador_en_uso, nombre, ruta_descarga, datos_cotizacion))
     thread.start()
 
+
 def cotizar(datos_cotizacion): # faltan: uso y tipo
+    ruta_descarga = get_download_path(datos_cotizacion)
+    bci_cotizador(ruta_descarga,datos_cotizacion)
+    """
     ruta_descarga = get_download_path(datos_cotizacion)
 
     ejecutar_en_hilo(bci_cotizador, 'BCI', ruta_descarga, datos_cotizacion)
@@ -32,3 +36,4 @@ def cotizar(datos_cotizacion): # faltan: uso y tipo
 
     ejecutar_en_hilo(sura_cotizador, 'Sura', ruta_descarga, datos_cotizacion)
     time.sleep(5)
+    """
