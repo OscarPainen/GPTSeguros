@@ -1,21 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotización</title>
+
+    <!-- Estilos CSS -->
+    <style>
+        /* Reset de márgenes y rellenos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Estilos generales del body */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e1f5fe;
+            /* Fondo celeste claro */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            /* Aparecerá arriba */
+            height: 100vh;
+            padding-top: 50px;
+            /* Un poco de espacio en la parte superior */
+        }
+
+        /* Estilos para el contenedor del formulario */
+        .form-container {
+            background-color: #ffffff;
+            /* Fondo blanco */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Título del formulario */
+        h1 {
+            color: #0277bd;
+            /* Azul intenso */
+            margin-bottom: 25px;
+        }
+
+        /* Estilos del formulario */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* Espacio entre los campos */
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #90caf9;
+            /* Borde azul claro */
+            border-radius: 4px;
+            background-color: #f1faff;
+            /* Fondo ligeramente celeste */
+        }
+
+        /* Botón de envío */
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #0288d1;
+            /* Azul */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0277bd;
+            /* Azul más oscuro en hover */
+        }
+
+        /* Estilo para la lista de errores de Django */
+        .errorlist {
+            color: #d32f2f;
+            /* Rojo para los errores */
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Formulario de Cotización</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enviar Cotización</button>
-    </form>
+    <!-- Contenedor del formulario -->
+    <div class="form-container">
+        <h1>Formulario GPT Seguros</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar Cotización</button>
+        </form>
+    </div>
 
 </body>
 

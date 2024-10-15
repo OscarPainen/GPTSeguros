@@ -14,8 +14,9 @@ def ejecutar_en_hilo(cotizador_en_uso, nombre, ruta_descarga, datos_cotizacion):
 
 
 def cotizar(datos_cotizacion): # faltan: uso y tipo
-    ruta_descarga = get_download_path(datos_cotizacion)
-    bci_cotizador(ruta_descarga,datos_cotizacion)
+    #ruta_descarga = get_download_path(datos_cotizacion)
+    #bci_cotizador(get_download_path(datos_cotizacion),datos_cotizacion)
+    mapfre_cotizador(get_download_path(datos_cotizacion),datos_cotizacion)
     """
     ruta_descarga = get_download_path(datos_cotizacion)
 

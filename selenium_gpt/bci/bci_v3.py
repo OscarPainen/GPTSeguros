@@ -158,7 +158,7 @@ def bci_cotizador(ruta_descarga,data_cliente):
             marca_vehiculo = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.ID, 'Vehiculo_Marca_Nombre'))
             )
-            marca_vehiculo.send_keys(data_cliente['marca_vehiculo'])  # Ingresar la marca en el campo de texto
+            marca_vehiculo.send_keys(data_cliente['marca'])  # Ingresar la marca en el campo de texto
             print("Marca del vehículo ingresada.")
             time.sleep(1)  # Pequeña pausa para permitir la carga del desplegable
 
@@ -174,7 +174,7 @@ def bci_cotizador(ruta_descarga,data_cliente):
             print("Opciones de marca cargadas.")
             
             # Seleccionar la opción correcta usando fuzzy matching
-            seleccionar_opcion_fuzzy(opciones_marca, data_cliente['marca_vehiculo'])
+            seleccionar_opcion_fuzzy(opciones_marca, data_cliente['marca'])
 
         except Exception as e:
             print(f"Error al seleccionar la marca: {e}")
@@ -185,7 +185,7 @@ def bci_cotizador(ruta_descarga,data_cliente):
             modelo_vehiculo = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@id="Vehiculo_Modelo_Nombre"]'))
             )
-            modelo_vehiculo.send_keys(data_cliente['modelo_vehiculo'][0])
+            modelo_vehiculo.send_keys(data_cliente['modelo'][0])
             time.sleep(1)
 
             # Espera a que la lista desplegable sea visible
@@ -200,7 +200,7 @@ def bci_cotizador(ruta_descarga,data_cliente):
             modelos_disponibles = [opcion.text for opcion in opciones_modelo]
 
             # Usamos fuzzy matching para encontrar el modelo más cercano al que introdujo el cliente
-            mejor_modelo, puntaje = process.extractOne(data_cliente['modelo_vehiculo'], modelos_disponibles, scorer=fuzz.token_set_ratio)
+            mejor_modelo, puntaje = process.extractOne(data_cliente['modelo'], modelos_disponibles, scorer=fuzz.token_set_ratio)
 
             print(f"Modelo más cercano encontrado: {mejor_modelo} con un puntaje de similitud de {puntaje}")
 
@@ -219,11 +219,11 @@ def bci_cotizador(ruta_descarga,data_cliente):
 
         # Año del vehículo
         year_car = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'Vehiculo_Anio')))
-        year_car.send_keys(data_cliente['año_vehiculo'])
+        year_car.send_keys(data_cliente['anio'])
 
         # Ingresar el RUT del propietario
         rut_prop = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'Propietario_RutCompleto')))
-        rut_prop.send_keys(data_cliente['rut_cliente'] + Keys.ENTER)
+        rut_prop.send_keys(data_cliente['rut'] + Keys.ENTER)
         time.sleep(5)
 
         # Ingresar el email
@@ -268,7 +268,7 @@ def bci_cotizador(ruta_descarga,data_cliente):
             new_files = files_after - files_before
             if new_files:
                 downloaded_file = new_files.pop()
-                new_name = f'{data_cliente["nombre_cliente"]}_BCI.pdf'
+                new_name = f'{data_cliente["nombre_asegurado"]}_BCI.pdf'
                 os.rename(os.path.join(ruta_descarga, downloaded_file), os.path.join(ruta_descarga, new_name))
                 logging.info(f"Archivo descargado y renombrado a: {new_name}")
             else:
