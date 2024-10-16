@@ -6,7 +6,7 @@ from selenium_gpt.mapfre import mapfre_cotizador
 from selenium_gpt.hdi import hdi_cotizador
 from selenium_gpt.sura import sura_cotizador
 from selenium_gpt.fid import fid_cotizador
-from selenium_gpt.cotizar import get_download_path, comprimir_carpeta
+from selenium_gpt.cotizar import get_download_path
 
 data_cliente = {
         "patente": 'PGWP88',
@@ -27,7 +27,7 @@ def main():
     print("5. Sura")
     print("6. FID")
     print("7. Salir")
-    opcion = "2" #input("Ingrese el número de la opción deseada: ")
+    opcion = "6" #input("Ingrese el número de la opción deseada: ")
 
     # Cotizador BCI - OK
     # Kia rio 3

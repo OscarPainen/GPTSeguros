@@ -173,7 +173,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 )
 
                 # Ingresar el RUT
-                rut_asegurado_input.send_keys(data_cliente['rut_cliente'])
+                rut_asegurado_input.send_keys(data_cliente['rut'])
                 found_rut = True
                 break
             except TimeoutException:
@@ -208,13 +208,13 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
             patente = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_Patente"]'))
             )
-            patente.send_keys(data_cliente['patente_vehiculo'])
+            patente.send_keys(data_cliente['patente'])
 
             # Ingresar año del vehiculo
             anio = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_Ano"]'))
             )
-            anio.send_keys(data_cliente['año_vehiculo'])
+            anio.send_keys(data_cliente['anio'])
 
             # -----------------
             # Selección de marca usando JavaScript
@@ -231,7 +231,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 find_marca = WebDriverWait(driver, 20).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_MarcaID-list"]/span/input'))
                 )
-                driver.execute_script("arguments[0].value = arguments[1];", find_marca, data_cliente['marca_vehiculo'])
+                driver.execute_script("arguments[0].value = arguments[1];", find_marca, data_cliente['marca'])
                 time.sleep(2)  # Esperar para que se carguen las opciones filtradas
 
                 # Buscar todas las opciones de la lista desplegable
@@ -241,7 +241,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
 
                 # Seleccionar la opción que mejor coincida con lo escrito
                 mejor_coincidencia = None
-                texto_buscado = data_cliente['marca_vehiculo'].lower()
+                texto_buscado = data_cliente['marca'].lower()
                 
                 for opcion in opciones_marca:
                     texto_opcion = opcion.text.strip().lower()
@@ -253,7 +253,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     driver.execute_script("arguments[0].click();", mejor_coincidencia)
                     print(f"Marca '{mejor_coincidencia.text}' seleccionada correctamente.")
                 else:
-                    print(f"No se encontró ninguna coincidencia adecuada para la marca '{data_cliente['marca_vehiculo']}'")
+                    print(f"No se encontró ninguna coincidencia adecuada para la marca '{data_cliente['marca']}'")
 
             except Exception as e:
                 print(f"Error al seleccionar la marca: {e}")
@@ -272,7 +272,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 find_modelo = WebDriverWait(driver, 20).until(
                     EC.element_to_be_clickable((By.XPATH, '//*[@id="Vehiculo_ModeloID-list"]/span/input'))
                 )
-                driver.execute_script("arguments[0].value = arguments[1];", find_modelo, data_cliente['modelo_vehiculo'])
+                driver.execute_script("arguments[0].value = arguments[1];", find_modelo, data_cliente['modelo'])
                 time.sleep(2)  # Esperar para que se carguen las opciones filtradas
 
                 # Buscar todas las opciones de la lista desplegable
@@ -283,7 +283,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                 # Seleccionar la opción con la mayor coincidencia utilizando fuzzy matching
                 mejor_coincidencia = None
                 mejor_similitud = 0
-                texto_buscado = data_cliente['modelo_vehiculo'].lower()
+                texto_buscado = data_cliente['modelo'].lower()
 
                 for opcion in opciones_modelo:
                     texto_opcion = opcion.text.strip().lower()
@@ -297,7 +297,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     driver.execute_script("arguments[0].click();", mejor_coincidencia)
                     print(f"Modelo '{mejor_coincidencia.text}' seleccionado correctamente con una similitud de {mejor_similitud}%.")
                 else:
-                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo_vehiculo']}'.")
+                    print(f"No se encontró ninguna coincidencia adecuada para el modelo '{data_cliente['modelo']}'.")
 
             except Exception as e:
                 print(f"Error al seleccionar el modelo: {e}")
@@ -438,7 +438,7 @@ def sura_cotizador(ruta_descarga,datos_cotizacion):
                     #print(f"Archivo descargado: {nombre_archivo}")
 
                     # Definir un nuevo nombre para el archivo
-                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_cliente']}_SURA.pdf")
+                    nuevo_nombre = os.path.join(ruta_descarga, f"{data_cliente['nombre_asegurado']}_SURA.pdf")
                     # Renombrar el archivo
                     os.rename(latest_file, nuevo_nombre)
                     print(f"Archivo renombrado a: {nuevo_nombre}")
