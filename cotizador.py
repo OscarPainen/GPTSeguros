@@ -1,11 +1,12 @@
 import os
 #from ans import cotizador_ant
-from selenium_gpt.bci import bci_cotizador, get_download_path
+from selenium_gpt.bci import bci_cotizador
 from selenium_gpt.renta import renta_cotizador
 from selenium_gpt.mapfre import mapfre_cotizador
 from selenium_gpt.hdi import hdi_cotizador
 from selenium_gpt.sura import sura_cotizador
 from selenium_gpt.fid import fid_cotizador
+from selenium_gpt.cotizar import get_download_path, comprimir_carpeta
 
 data_cliente = {
         "patente": 'PGWP88',
@@ -54,6 +55,7 @@ def main():
     else:
         print("Opción no válida")
         main()
+
 """
     # Cotizador Mapfre - 
     # hyundai - eon
@@ -126,6 +128,7 @@ def main():
         main()
 
     """
+    
 
 if __name__ == "__main__":
     main()

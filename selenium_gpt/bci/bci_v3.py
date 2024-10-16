@@ -1,5 +1,6 @@
 import os
 import time
+import datetime
 import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -35,14 +36,6 @@ def seleccionar_opcion_fuzzy(opciones, valor_cliente):
                     return
     print(f"No se encontró una coincidencia adecuada para '{valor_cliente}'.")
 
-def get_download_path(data_cliente):
-    """Devuelve la ruta de descarga personalizada según el cliente."""
-    download_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion', data_cliente['nombre_asegurado'])
-
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)
-
-    return download_path
 
 def configure_webdriver(download_path):
     """Configura y devuelve un WebDriver de Chrome en modo headless."""

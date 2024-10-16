@@ -5,23 +5,21 @@ from .forms import CotizacionForm
 import logging
 from selenium_gpt import cotizar as cotizador
 # Create your views here.
-import subprocess
-
-def ejecutar_cotizador(request):
-    if request.method == 'GET':
-        try:
-            # Ejecutar el script cotizador.py
-            resultado = subprocess.run(['python3', 'cotizador.py'], capture_output=True, text=True)
-
-            # Retornar la salida del script como respuesta
-            return JsonResponse({'status': 'success', 'output': resultado.stdout})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'fail', 'message': 'Método no permitido'})
-
 # Cotizacion Con Formulario
+
 from .forms import CotizacionForm
+logger = logging.getLogger(__name__)
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from .forms import CotizacionForm
+import logging
+import zipfile
+import os
+import io
+from selenium_gpt import cotizar as cotizador
+
 logger = logging.getLogger(__name__)
 
 def RealizarCotizacion(request):
@@ -41,11 +39,25 @@ def RealizarCotizacion(request):
                 
                 logger.debug(f"Datos de cotización preparados: {datos_cotizacion}")
                 
-                # Llamar a la función cotizar
+                # Llamar a la función cotizar y obtener la ruta de la carpeta
+                FolderPath = cotizador.cotizar(datos_cotizacion)
                 
-                cotizador.cotizar(datos_cotizacion)
+                # Crear archivo ZIP en memoria
+                zip_buffer = io.BytesIO()
+                
+                with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+                    # Agregar todos los archivos de la carpeta al ZIP
+                    for foldername, subfolders, filenames in os.walk(FolderPath):
+                        for filename in filenames:
+                            file_path = os.path.join(foldername, filename)
+                            zip_file.write(file_path, os.path.relpath(file_path, FolderPath))
+                
+                # Preparar el archivo ZIP para ser descargado
+                zip_buffer.seek(0)
+                response = HttpResponse(zip_buffer, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename="CotizacionesCompletas.zip"'
 
-                return HttpResponse(f"Resultado de la cotización: ok")
+                return response
             
             except Exception as e:
                 logger.error(f"Error durante la cotización: {str(e)}", exc_info=True)
