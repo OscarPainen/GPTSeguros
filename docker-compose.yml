@@ -1,0 +1,92 @@
+version: '3'
+
+services:
+  pgsql-db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=gpt_scraper
+      - POSTGRES_USER=gpt_admin
+      - POSTGRES_PASSWORD=Gpt.123!
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  django-web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: always
+    volumes:
+      - .:/gptseguros
+    ports:
+      - "8000:8000"
+    depends_on:
+      - pgsql-db
+      - redis
+      - broker
+    environment:
+      - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  broker:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=gpt_admin
+      - RABBITMQ_DEFAULT_PASS=Gpt.123!
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # RabbitMQ management interface
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery-worker-1:
+    build: .
+    command: celery -A gptproyect worker -l info -c 10 -n worker1
+    volumes:
+      - .:/gptseguros
+    depends_on:
+      - broker
+      - redis
+    environment:
+      - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  celery-worker-2:
+    build: .
+    command: celery -A gptproyect worker -l info -c 10 -n worker2
+    volumes:
+      - .:/gptseguros
+    depends_on:
+      - broker
+      - redis
+    environment:
+      - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  celery-beat:
+    build: .
+    command: celery -A gptproyect beat -l info --pidfile=
+    container_name: celery_beat
+    volumes:
+      - .:/gptseguros
+    depends_on:
+      - broker
+      - django-web
+      - redis
+    environment:
+      - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  flower:
+    image: mher/flower
+    command: ["flower", "--broker=amqp://gpt_admin:Gpt.123!@broker", "--port=5555"]
+    ports:
+      - "5555:5555"
+    depends_on:
+      - broker
+
+volumes:
+  pgdata:
