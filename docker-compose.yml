@@ -82,7 +82,8 @@ services:
 
   flower:
     image: mher/flower
-    command: ["flower", "--broker=amqp://gpt_admin:Gpt.123!@broker", "--port=5555"]
+    environment:
+      - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker:5672/
     ports:
       - "5555:5555"
     depends_on:
