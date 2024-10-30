@@ -11,19 +11,27 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gpt_admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   django-web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     restart: always
     volumes:
       - .:/gptseguros
     ports:
       - "8000:8000"
     depends_on:
-      - pgsql-db
-      - redis
-      - broker
+      pgsql-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      broker:
+        condition: service_started
     environment:
       - CELERY_BROKER_URL=amqp://gpt_admin:Gpt.123!@broker
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
