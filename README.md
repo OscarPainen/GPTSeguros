@@ -154,8 +154,6 @@ SURA_CONTRASENA=your_password
 DOWNLOAD_PATH=./cotizacion
 ```
 
-> ⚠️ Nunca subas tu archivo `.env` al repositorio. Está incluido en `.gitignore`.
-
 ---
 
 ## 🎮 Modos de uso
@@ -183,10 +181,10 @@ Accede en `http://localhost:8000`
 | Campo | Ejemplo |
 |---|---|
 | RUT del asegurado | 12.345.678-9 |
-| Marca del vehículo | Toyota |
-| Modelo | Corolla |
-| Año | 2020 |
-| Nombre del asegurado | Juan Pérez |
+| Marca del vehículo | Honda |
+| Modelo | Civic |
+| Año | 2000 |
+| Nombre del asegurado | Peter Parker |
 
 ---
 
@@ -210,7 +208,7 @@ Accede en `http://localhost:8000`
 
 ---
 
-## ⚖️ Aviso legal
+## ⚖️ Aviso
 
 Este proyecto es una herramienta de desarrollo personal. El uso de automatización web debe respetar los términos de servicio de cada plataforma. El autor no se responsabiliza por el uso indebido de esta herramienta.
 
