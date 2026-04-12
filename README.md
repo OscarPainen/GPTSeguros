@@ -42,9 +42,9 @@ Desarrollado como proyecto personal para reducir el tiempo operativo de corredor
 
 ---
 
-## 🛠️ Stack tecnológico
+## 🛠️ Stack
 
-| Área | Tecnología |
+| Área | Librerias |
 |---|---|
 | **Automatización** | Python, Selenium, ChromeDriver |
 | **Backend** | Django, Django REST Framework |
