@@ -8,13 +8,14 @@ from selenium_gpt.sura import sura_cotizador
 from selenium_gpt.fid import fid_cotizador
 from selenium_gpt.cotizar import get_download_path
 
+# Datos de ejemplo - REEMPLAZAR CON DATOS REALES DEL CLIENTE
 data_cliente = {
-        "patente": 'PGWP88',
-        "marca": 'MAZDA',
-        "modelo": 'cx 5',
-        "anio": '2020',
-        "nombre_asegurado": 'camila Mendez',
-        "rut": '161538205'}
+        "patente": 'XX1234',  # Cambiar con patente real
+        "marca": 'MARCA',  # Cambiar con marca real
+        "modelo": 'MODELO',  # Cambiar con modelo real
+        "anio": '2020',  # Cambiar con año real
+        "nombre_asegurado": 'Nombre Completo',  # Cambiar con nombre real
+        "rut": '00000000-0'}  # Cambiar con RUT real
 
 ruta_descarga = get_download_path(data_cliente)
 

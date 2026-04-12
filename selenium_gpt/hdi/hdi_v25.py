@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import time
 import logging
 from selenium import webdriver
@@ -12,6 +13,13 @@ from selenium.webdriver.support.ui import Select
 from fuzzywuzzy import fuzz, process
 import glob
 import sys
+
+load_dotenv()
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente: ")

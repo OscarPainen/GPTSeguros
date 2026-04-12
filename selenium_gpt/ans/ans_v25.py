@@ -12,10 +12,18 @@ from selenium_gpt.common.exceptions import ElementNotInteractableException
 from selenium_gpt.webdriver.chrome.options import Options
 import time
 import os
+from dotenv import load_dotenv
 import glob
 import sys
 import shutil
 import json
+
+load_dotenv()
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
 
 # marca, modelo, año, uso (particular/comcercial), comuna, forma de pago, numero cuotas,  
 def get_main_data():

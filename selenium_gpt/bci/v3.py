@@ -7,21 +7,33 @@ from selenium_gpt import webdriver
 from selenium_gpt.webdriver.common.action_chains import ActionChains
 from selenium_gpt.webdriver.chrome.options import Options
 import os
+from dotenv import load_dotenv
 import time
 import shutil
 
 # Constantes
-URL_BCI_LOGIN = 'https://oficinavirtual.bciseguros.cl/Home/LinkLogin?ReturnUrl=%2fprincipal%2fprincipal'
-USUARIO = '766609414'
-CONTRASENA = '76660941rts'
-EMAIL_CONTACTO = 'mauricio@gptseguros.cl'
-TELEFONO_CONTACTO = '941712629'
+load_dotenv()
 
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
+
+BCI_URL = os.getenv(
+    "BCI_URL",
+    "https://oficinavirtual.bciseguros.cl/Home/LinkLogin?ReturnUrl=%2fprincipal%2fprincipal",
+)
+USUARIO = require_env("BCI_USUARIO")
+CONTRASENA = require_env("BCI_CONTRASENA")
+
+EMAIL_CONTACTO = require_env("FID_EMAIL_CONTACTO")
+TELEFONO_CONTACTO = require_env("FID_TELEFONO_CONTACTO")
 # Funciones auxiliares
 
 def get_download_path(data_cliente):
     """Devuelve la ruta de descarga personalizada según el cliente."""
-    download_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'cotizacion', data_cliente['nombre_asegurado'])
+    download_path = os.path.join(os.path.expanduser('~'), os.getenv("DOWNLOAD_PATH", "./cotizacion"), data_cliente['nombre_asegurado'])
 
     if not os.path.exists(download_path):
         os.makedirs(download_path)
@@ -63,7 +75,7 @@ def bci_cotizador(data_cliente):
     
     try:
         files_before = set(os.listdir(download_path))
-        driver.get(URL_BCI_LOGIN)
+        driver.get(BCI_URL)
 
         # Login
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "Rut"))).send_keys(USUARIO)

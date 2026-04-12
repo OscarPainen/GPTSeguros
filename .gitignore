@@ -60,3 +60,7 @@ coverage.xml
 # Archivos de depuración y profiling
 *.prof
 *.profraw
+
+#Carpetas de ./Selenium_GPT
+**/build/
+**/dist/

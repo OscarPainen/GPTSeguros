@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import time
 import logging
 from selenium import webdriver
@@ -13,6 +14,13 @@ from fuzzywuzzy import fuzz, process
 import glob
 import sys
 import logging
+
+load_dotenv()
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
 
 # Configuración del logging
 logging.basicConfig(level=logging.INFO)
@@ -74,8 +82,8 @@ def rename_latest_file(download_path, new_name):
         logging.error(f"Error renombrando el archivo: {e}")
 
 def mapfre_cotizador(ruta_descarga, data_cliente):
-    usuario = '766609414'
-    contraseña = '76660941'
+    usuario = require_env("MAPFRE_USUARIO")
+    contraseña = require_env("MAPFRE_CONTRASENA")
     login_url = 'https://portalcorredores.mapfre.cl/'
 
     driver = configure_webdriver(ruta_descarga, chrome_testing=True)

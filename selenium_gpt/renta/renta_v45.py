@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import time
 import logging
 from selenium import webdriver
@@ -15,6 +16,13 @@ import sys
 import shutil
 import json
 from fuzzywuzzy import fuzz
+
+load_dotenv()
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente (sin puntos ni guión): ")
@@ -73,8 +81,8 @@ def configure_webdriver(download_path,chrome_testing=False):
 
 
 def renta_cotizador(ruta_descarga,data_cliente):
-    usuario = '766609414'
-    contraseña = 'Rts221184rts'
+    usuario = require_env("RENTA_USUARIO")
+    contraseña = require_env("RENTA_CONTRASENA")
     login_url = 'https://sgi.rentanacional.cl/'
 
     driver = configure_webdriver(ruta_descarga,chrome_testing=True)

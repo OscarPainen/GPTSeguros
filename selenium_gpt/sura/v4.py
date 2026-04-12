@@ -1,5 +1,6 @@
 #codigo para Sura
 import os
+from dotenv import load_dotenv
 import time
 import logging
 from selenium import webdriver
@@ -15,6 +16,12 @@ import sys
 import glob
 import json
 
+load_dotenv()
+def require_env(key: str) -> str:
+    value = os.getenv(key)
+    if not value:
+        raise RuntimeError(f"Falta variable de entorno requerida: {key}")
+    return value
 
 def get_main_data():
     rut = input("Ingrese el RUT del cliente (sin puntos ni guión): ")
@@ -77,8 +84,8 @@ def configure_webdriver(download_path,chrome_testing=False):
         return chrome_default(webdriver.Firefox())
     
 def sura_cotizador(ruta_descarga,datos_cotizacion):
-    usuario='76660941'
-    contraseña='766609'
+    usuario = require_env("SURA_USUARIO")
+    contraseña = require_env("SURA_CONTRASENA")
     deducible='5'
     login_url = 'https://seguros.sura.cl/acceso/corredor'
 
